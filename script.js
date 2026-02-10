@@ -3,7 +3,7 @@ let breakTime = 5 * 60;
 let time = studyTime;
 let isStudy = true;
 let interval = null;
-let totalMinutes = 0;
+let totalMinutes = Number(localStorage.getItem("totalMinutes))||0;
 
 const timer = document.getElementById("timer");
 const mode = document.getElementById("mode");
@@ -32,6 +32,7 @@ document.getElementById("startBtn").onclick = () => {
 
       if (isStudy) {
         totalMinutes += 25;
+        localStorage.setItem(:totalMinutes",totalMinutes);
         updateTotalTime();
       }
 
@@ -60,4 +61,18 @@ document.getElementById("resetBtn").onclick = () => {
 };
 
 updateDisplay();
+
 updateTotalTime();
+
+const darkBtn = document.getElementById("darkModeBtn");
+
+darkBtn.onclick = () => {
+  document.body.classList.toggle("dark");
+
+  const isDark = document.body.classList.contains("dark");
+  localStorage.setItem("darkMode", isDark);
+};
+
+if (localStorage.getItem("darkMode") === "true") {
+  document.body.classList.add("dark");
+}
