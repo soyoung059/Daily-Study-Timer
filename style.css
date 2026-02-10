@@ -48,3 +48,17 @@ button {
     margin-top: 15px; 
     color: #444;
 }
+.dark {
+    background: gray;
+}
+.container {
+    background: gray;
+    color: white;
+}
+.dark #mode, .dark #totalTime {
+    color: gray
+}
+.dark button {
+    background: gray;
+    color: white;
+}
