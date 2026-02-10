@@ -3,7 +3,7 @@ let breakTime = 5 * 60;
 let time = studyTime;
 let isStudy = true;
 let interval = null;
-let totalMinutes = Number(localStorage.getItem("totalMinutes))||0;
+let totalMinutes = Number(localStorage.getItem("totalMinutes"))||0;
 
 const timer = document.getElementById("timer");
 const mode = document.getElementById("mode");
@@ -32,7 +32,7 @@ document.getElementById("startBtn").onclick = () => {
 
       if (isStudy) {
         totalMinutes += 25;
-        localStorage.setItem(:totalMinutes",totalMinutes);
+        localStorage.setItem("totalMinutes",totalMinutes);
         updateTotalTime();
       }
 
