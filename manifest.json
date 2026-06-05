@@ -1,7 +1,7 @@
 {
   "name": "Daily Timer",
   "short_name": "Timer",
-  "start_url": "./index.html",
+  "start_url": "start_url": "./study-timer.html",
   "display": "standalone",
   "background_color": "#f3f6ff",
   "theme_color": "#5b6cff",
