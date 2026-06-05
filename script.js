@@ -1,78 +1,105 @@
-let studyTime = 25 * 60;
-let breakTime = 5 * 60;
-let time = studyTime;
-let isStudy = true;
-let interval = null;
-let totalMinutes = Number(localStorage.getItem("totalMinutes"))||0;
+/**
+ * Daily-Study-Timer (최종 리팩토링 버전)
+ * 기능: 공부 타이머, 휴식 모드 전환, 공부 시간 로컬 저장, 다크 모드 지원
+ */
 
-const timer = document.getElementById("timer");
-const mode = document.getElementById("mode");
-const totalTimeDisplay = document.getElementById("totalTime");
+class StudyTimer {
+    constructor() {
+        // 설정값 관리 (상수 객체)
+        this.config = { STUDY_MINUTES: 25, BREAK_MINUTES: 5 };
+        this.studyTime = this.config.STUDY_MINUTES * 60;
+        this.breakTime = this.config.BREAK_MINUTES * 60;
+        
+        this.time = this.studyTime;
+        this.isStudy = true;
+        this.interval = null;
+        this.totalMinutes = Number(localStorage.getItem("totalMinutes")) || 0;
 
-function updateDisplay() {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-  timer.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-}
-
-function updateTotalTime() {
-  totalTimeDisplay.textContent = `오늘 공부 시간: ${totalMinutes}분`;
-}
-
-document.getElementById("startBtn").onclick = () => {
-  if (interval) return;
-
-  interval = setInterval(() => {
-    if (time > 0) {
-      time--;
-      updateDisplay();
-    } else {
-      clearInterval(interval);
-      interval = null;
-
-      if (isStudy) {
-        totalMinutes += 25;
-        localStorage.setItem("totalMinutes",totalMinutes);
-        updateTotalTime();
-      }
-
-      isStudy = !isStudy;
-      time = isStudy ? studyTime : breakTime;
-      mode.textContent = isStudy ? "Study Mode" : "Break Mode";
-
-      alert(isStudy ? "다시 공부 시작!" : "휴식 시간!");
-      updateDisplay();
+        this.initElements();
+        this.loadSettings();
+        this.updateDisplay();
+        this.updateTotalTime();
     }
-  }, 1000);
-};
 
-document.getElementById("pauseBtn").onclick = () => {
-  clearInterval(interval);
-  interval = null;
-};
+    // DOM 요소 초기화 및 이벤트 연결
+    initElements() {
+        this.timerDisplay = document.getElementById("timer");
+        this.modeDisplay = document.getElementById("mode");
+        this.totalDisplay = document.getElementById("totalTime");
+        
+        document.getElementById("startBtn").onclick = () => this.start();
+        document.getElementById("pauseBtn").onclick = () => this.pause();
+        document.getElementById("resetBtn").onclick = () => this.reset();
+        document.getElementById("darkModeBtn").onclick = () => this.toggleDarkMode();
+    }
 
-document.getElementById("resetBtn").onclick = () => {
-  clearInterval(interval);
-  interval = null;
-  isStudy = true;
-  time = studyTime;
-  mode.textContent = "Study Mode";
-  updateDisplay();
-};
+    // 초기 설정 불러오기
+    loadSettings() {
+        if (localStorage.getItem("darkMode") === "true") {
+            document.body.classList.add("dark");
+        }
+    }
 
-updateDisplay();
+    updateDisplay() {
+        const mins = Math.floor(this.time / 60);
+        const secs = this.time % 60;
+        this.timerDisplay.textContent = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+    }
 
-updateTotalTime();
+    updateTotalTime() {
+        this.totalDisplay.textContent = `오늘 공부 시간: ${this.totalMinutes}분`;
+    }
 
-const darkBtn = document.getElementById("darkModeBtn");
+    start() {
+        if (this.interval) return;
+        this.interval = setInterval(() => {
+            if (this.time > 0) {
+                this.time--;
+                this.updateDisplay();
+            } else {
+                this.switchMode();
+            }
+        }, 1000);
+    }
 
-darkBtn.onclick = () => {
-  document.body.classList.toggle("dark");
+    pause() {
+        clearInterval(this.interval);
+        this.interval = null;
+    }
 
-  const isDark = document.body.classList.contains("dark");
-  localStorage.setItem("darkMode", isDark);
-};
+    reset() {
+        this.pause();
+        this.isStudy = true;
+        this.time = this.studyTime;
+        this.modeDisplay.textContent = "Study Mode";
+        this.updateDisplay();
+    }
 
-if (localStorage.getItem("darkMode") === "true") {
-  document.body.classList.add("dark");
+    // 모드 전환 로직
+    switchMode() {
+        this.pause();
+        
+        // 공부 모드 종료 시 시간 기록
+        if (this.isStudy) {
+            this.totalMinutes += this.config.STUDY_MINUTES;
+            localStorage.setItem("totalMinutes", this.totalMinutes);
+            this.updateTotalTime();
+        }
+
+        this.isStudy = !this.isStudy;
+        this.time = this.isStudy ? this.studyTime : this.breakTime;
+        this.modeDisplay.textContent = this.isStudy ? "Study Mode" : "Break Mode";
+        
+        alert(this.isStudy ? "다시 공부 시작!" : "휴식 시간!");
+        this.updateDisplay();
+    }
+
+    toggleDarkMode() {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        localStorage.setItem("darkMode", isDark);
+    }
 }
+
+// 애플리케이션 실행
+const timerApp = new StudyTimer();
